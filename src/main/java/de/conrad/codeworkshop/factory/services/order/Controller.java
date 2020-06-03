@@ -3,7 +3,9 @@ package de.conrad.codeworkshop.factory.services.order;
 import de.conrad.codeworkshop.factory.services.order.api.Order;
 import de.conrad.codeworkshop.factory.services.order.api.OrderConfirmation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,8 +23,8 @@ public class Controller {
         this.factoryService = service;
     }
 
-    @PostMapping("/create")
-    public OrderConfirmation createOrder(final Order order) {
+    @PostMapping(path = "/create", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public OrderConfirmation createOrder(@RequestBody final Order order) {
         return factoryService.createOrder(order);
     }
 }
