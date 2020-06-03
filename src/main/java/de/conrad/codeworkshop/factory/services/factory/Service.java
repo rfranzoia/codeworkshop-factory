@@ -6,6 +6,7 @@ import de.conrad.codeworkshop.factory.services.order.api.OrderStatus;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 
 /**
  * @author Andreas Hartmann
@@ -26,21 +27,18 @@ public class Service {
         manufacturingQueue.add(order);
     }
     
-    public void dequeueAndNotify() {
-    	Runnable dequeueAndNotify = () -> {
-			try {
-				if (!manufacturingQueue.isEmpty()) {
-					Order order = manufacturingQueue.poll();
-					order.setStatus(OrderStatus.COMPLETED);
-					Thread.sleep(FIVE_SECONDS);
-					notificationService.notifyCustomer(order);
-				}
-			} catch (Throwable t) {
-				// log the error
+    @Async
+    public void dequeueAndNotify() throws InterruptedException {
+		try {
+			if (!manufacturingQueue.isEmpty()) {
+				Order order = manufacturingQueue.poll();
+				order.setStatus(OrderStatus.COMPLETED);
+				Thread.sleep(FIVE_SECONDS);
+				notificationService.notifyCustomer(order);
 			}
-    	};
-    	
-    	new Thread(dequeueAndNotify).start();
+		} catch (Throwable t) {
+			// log the error
+		}
     	
     }
 }
